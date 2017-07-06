@@ -1,0 +1,7 @@
+#header
+  %p
+  - if current_user
+    = "Hello, #{current_user.name}."
+    = link_to "Logout", logout_path, method: :delete
+  - else
+    = link_to "Sign in to Reddit", "https://www.reddit.com/api/v1/authorize?client_id=#{ENV['REDDIT_KEY']}&response_type=code&state=1270013000&redirect_uri=#{ENV['REDDIT_REDIRECT']}&duration=permanent&scope=identity"
