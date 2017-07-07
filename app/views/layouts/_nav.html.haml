@@ -1,7 +1,10 @@
 #header
   %p
   - if current_user
-    = "Hello, #{current_user.name}."
+    = "Hello, "
+    = link_to current_user.name, user_path(current_user)
+    = "."
     = link_to "Logout", logout_path, method: :delete
+    = " - Your Authorization expires in #{session[:expiration]}"
   - else
-    = link_to "Sign in to Reddit", "https://www.reddit.com/api/v1/authorize?client_id=#{ENV['REDDIT_KEY']}&response_type=code&state=1270013000&redirect_uri=#{ENV['REDDIT_REDIRECT']}&duration=permanent&scope=identity"
+    = link_to "Sign in to Reddit", "https://www.reddit.com/api/v1/authorize?client_id=#{ENV['REDDIT_KEY']}&response_type=code&state=1270013000&redirect_uri=#{ENV['REDDIT_REDIRECT']}&duration=permanent&scope=identity mysubreddits"

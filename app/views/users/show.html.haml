@@ -1,0 +1,13 @@
+%h2
+  = current_user.name
+%p
+  = "#{current_user.karma[:post]} Post Karma"
+%p
+  = "#{current_user.karma[:comment]} Comment Karma"
+%h2 my subreddits
+%ul.subreddits
+  - current_user.subreddit_subscriptions.each do |subscription|
+    %li
+      %h3= link_to "#{subscription.name}: #{subscription.title}", subscription.url
+      %p= subscription.description
+      %p= "#{number_with_delimiter(subscription.subscribers, :delimiter => ',')} Subscribers, a community for #{subscription.created} years"
