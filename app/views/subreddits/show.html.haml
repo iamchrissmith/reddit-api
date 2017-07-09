@@ -1,0 +1,16 @@
+%div.sidebar
+  %h3= link_to "#{@subreddit.title}", @subreddit.url
+  %p= "#{number_with_delimiter(@subreddit.subscribers, :delimiter => ',')} readers"
+  %p= "#{number_with_delimiter(@subreddit.active_users, :delimiter => ',')} users here now"
+  != CGI.unescapeHTML(@subreddit.description_html)
+%h2 Hot Posts
+%ul.posts
+  - @subreddit_posts.each do |post|
+    %li
+      %p= "#{post.title}"
+      %p= "#{post.author}"
+      %p= "#{post.domain}"
+      %p= "#{post.created}"
+      %p= "#{post.url}"
+      %p= "#{post.num_comments}"
+      %p= "#{post.score}"

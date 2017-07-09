@@ -9,5 +9,5 @@
   - current_user.subreddit_subscriptions.each do |subscription|
     %li
       %h3= link_to "#{subscription.name}: #{subscription.title}", subscription.url
-      %p= subscription.description
+      %p= subscription.public_description
       %p= "#{number_with_delimiter(subscription.subscribers, :delimiter => ',')} Subscribers, a community for #{subscription.created} years"

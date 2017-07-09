@@ -1,6 +1,6 @@
 class SessionsController < ApplicationController
   def create
-    user = RedditService.sign_in(params["code"])
+    user = RedditOauthService.sign_in(params["code"])
 
     if user.save
       session[:user_id] = user.id

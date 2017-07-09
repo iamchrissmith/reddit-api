@@ -2,17 +2,27 @@ class Subreddit
   attr_reader :name,
               :title,
               :url,
-              :description,
+              :public_description,
+              :description_html,
               :subscribers,
+              :active_users,
               :created
 
   def initialize(attrs)
-    @name = attrs["data"]["display_name_prefixed"]
-    @title = attrs["data"]["title"]
-    @url = attrs["data"]["url"]
-    @description = attrs["data"]["public_description"]
-    @subscribers = attrs["data"]["subscribers"]
-    @created = years_since_created(attrs["data"]["created_utc"])
+    @name = attrs["display_name_prefixed"]
+    @title = attrs["title"]
+    @url = attrs["url"]
+    @public_description = attrs["public_description"]
+    @description_html = attrs["description_html"]
+    @subscribers = attrs["subscribers"]
+    @active_users = attrs["active_user_count"]
+    @created = years_since_created(attrs["created_utc"])
+  end
+
+  def get_hot_posts(attrs)
+    RedditService.get_hot_posts(attrs)['data']['children'].map do |raw_post|
+      Post.new(raw_post['data'])
+    end
   end
 
   private

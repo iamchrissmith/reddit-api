@@ -1,76 +1,58 @@
 class RedditService
-  def self.sign_in(code)
-    tokens = get_tokens(code)
-    raw_user = get_user(tokens["access_token"])
-
-    user = User.find_or_create_by(uid: raw_user["id"])
-    user.name = raw_user["name"]
-    user.access_token = tokens["access_token"]
-    user.refresh_token = tokens["refresh_token"]
-
-    user
+  def initialize(attrs)
+    @access_token = attrs[:access_token]
+    @subreddit = attrs[:subreddit]
+    @conn = Faraday.new(url: "https://oauth.reddit.com")
+    conn.authorization('bearer', access_token)
   end
 
-  def self.renew_access_token(refresh_token)
-    url = "https://www.reddit.com/api/v1/access_token"
-    conn = Faraday.new(url)
-    conn.basic_auth(ENV["REDDIT_KEY"],ENV["REDDIT_SECRET"])
-
-    response = conn.post(
-      url,
-      grant_type: "refresh_token",
-      refresh_token: refresh_token
-    )
-
-    JSON.parse(response.body)["access_token"]
+  def self.get_user(access_token)
+    new(access_token: access_token).get_user
   end
 
   def self.get_user_karma(access_token)
-    url = "https://oauth.reddit.com/api/v1/me"
-    conn = Faraday.new(url)
-    conn.authorization('bearer', access_token)
-
-    response = conn.get
+    response = new(access_token: access_token).get_user
     {
-      post: JSON.parse(response.body)["link_karma"],
-      comment: JSON.parse(response.body)["comment_karma"]
+      post: response['link_karma'],
+      comment: response['comment_karma']
     }
   end
 
   def self.get_user_subscriptions(access_token)
-    url = "https://oauth.reddit.com/subreddits/mine/subscriber"
-    conn = Faraday.new(url)
-    conn.authorization('bearer', access_token)
+    new(access_token: access_token).get_user_subscriptions['data']['children']
+  end
 
-    response = conn.get
-    JSON.parse(response.body)["data"]["children"]
+  def self.get_subreddit_details(attrs)
+    new(attrs).get_subreddit_details
+  end
+
+  def self.get_hot_posts(attrs)
+    new(attrs).get_hot_posts
+  end
+
+  def get_user
+    response = conn.get '/api/v1/me'
+    JSON.parse(response.body)
+  end
+
+  def get_user_subscriptions
+    response = conn.get '/subreddits/mine/subscriber'
+    JSON.parse(response.body)
+  end
+
+  def get_subreddit_details
+    response = conn.get "/r/#{subreddit}/about"
+    JSON.parse(response.body)
+  end
+
+  def get_hot_posts
+    response = conn.get "/r/#{subreddit}"
+    JSON.parse(response.body)
   end
 
   private
+    attr_reader :conn, :access_token, :subreddit
 
-    def self.get_user(token)
-      url = "https://oauth.reddit.com/api/v1/me"
-      conn = Faraday.new(url)
-      conn.authorization('bearer', token)
-
-      response = conn.get
-      JSON.parse(response.body)
-    end
-
-    def self.get_tokens(code)
-      url = "https://www.reddit.com/api/v1/access_token"
-      conn = Faraday.new(url)
-      conn.basic_auth(ENV["REDDIT_KEY"],ENV["REDDIT_SECRET"])
-
-      response = conn.post(
-        url,
-        code: code,
-        redirect_uri: ENV["REDDIT_REDIRECT"],
-        grant_type: "authorization_code"
-      )
-
-      JSON.parse(response.body)
-    end
 end
 
 # url = "https://oauth.reddit.com/api/v1/me/karma" # subreddit karma breakdown
