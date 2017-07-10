@@ -4,7 +4,7 @@
   %p= "#{number_with_delimiter(@subreddit.active_users, :delimiter => ',')} users here now"
   != CGI.unescapeHTML(@subreddit.description_html)
 %h2 Hot Posts
-%ul.posts
+%ol.posts
   - @subreddit_posts.each do |post|
     %li
       %p= "#{post.title}"
