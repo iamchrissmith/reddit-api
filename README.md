@@ -1,16 +1,9 @@
 # README
 
-rough project plan:
-Wed
-Oauth
+A Reddit API project spike.  I explored recreating parts of Reddit using their API.  
 
-Thur
-Consume an endpoint
-
-Fri
-Start using VCR
-
-Sat
-
-Sun
-do the things
+You can try this yourself:
+- Clone this repo locally
+- `bundle`
+- `rails s`
+- Visit http://localhost:3000
